@@ -7,6 +7,7 @@ public class MainTest {
 	static public void main (String []args) throws Exception{
 		//Scanner sc = new Scanner (System.in);
 		String line = "";
+		double result = -0.1;
 		try(FileReader reader = new FileReader("D:\\Folder_for_Java_IDE\\WorkWithFiles\\src\\fileTester\\numbers.txt")){
 			int c;
 			while ((c=reader.read())!=-1) {
@@ -60,16 +61,24 @@ public class MainTest {
 		}
 		if(is) {
 			switch(znak){
-			case('+'): System.out.print(a + b);
+			case('+'): result = a + b;
 			break;
-			case('-'): System.out.print(a - b);
+			case('-'): result = a - b;
 			break;
 			case('/'): 
 				if(b==0.0) System.out.print("Error! Division by zero"); // да, тут без throw, если честно я не пытался его написать, потому что деление на 0 и на 0.0 вроде как тоже самое, а вроде и нет, лучше в некоторых местах опустить условие и схитрить )))
-				else	 System.out.print(a / b);
+				else	result = a / b;
 			break;
-			case('*'): System.out.print(a * b);
+			case('*'): result = a * b;
 			break;
+			}
+			System.out.print(result);
+			try(FileWriter writer = new FileWriter("D:\\Folder_for_Java_IDE\\WorkWithFiles\\src\\fileTester\\results.txt",true)) {
+				writer.write(line + " = "+result);
+				writer.append('\n');
+				writer.flush();
+			} catch (IOException ex) {
+				System.out.print(ex.getMessage());
 			}
 		}
 
