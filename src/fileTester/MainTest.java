@@ -5,19 +5,36 @@ import java.util.Scanner;
 
 public class MainTest {
 	static public void main (String []args) throws Exception{
-		//Scanner sc = new Scanner (System.in);
 		String line = "";
-		double result = -0.1;
 		try(FileReader reader = new FileReader("D:\\Folder_for_Java_IDE\\WorkWithFiles\\src\\fileTester\\numbers.txt")){
 			int c;
 			while ((c=reader.read())!=-1) {
-				//line = line.concat(String.valueOf(c));
+				if(c==13) {
+					System.out.print(line+" = ");
+					calculate(line);
+					line = "";
+					continue;
+				}
 				line = line.concat(String.valueOf((char)c));
 			}
 		}catch(IOException s) {
 			System.out.println(s.getMessage());
 		}
-//		sc.close(); // не забывай закрывать поток !
+		System.out.print(line+" = ");
+		calculate(line);
+	}
+	
+	public static char result(String nms, char znak) throws Exception { //так то можно легко обойтись и без этой конструкции, но как я сказал ранее, мы изучаем тему throw , так что нужно изгибаться по максимуму что-бы реализовывать через эти ... дебри, если можно так выразится 
+		if(nms.equals("/") || nms.equals("*") || nms.equals("+") || nms.equals("-")) {
+			znak = nms.charAt(0);
+			return znak;
+		}
+		else throw new Exception("OperationError");//Обрати вниманеи что это сообщение  отличается от заданого в условии. Именно это, сообщение, должно быть читабельным для программы, так что дальше мы просто через System.out.print выведем нужное нам сообщение.
+	}
+	
+	public static void calculate(String line) throws Exception{
+		FileWriter writer = new FileWriter("D:\\Folder_for_Java_IDE\\WorkWithFiles\\src\\fileTester\\results.txt",true);
+		double result = -0.1;
 		double a = 0.0;
 		double b = 0.0;
 		char znak = ' ';
@@ -29,7 +46,15 @@ public class MainTest {
 				try {
 					a = Double.valueOf(num);	
 				}catch(NumberFormatException e) {
-					System.out.print("Error! Not number\n");
+					System.out.print("Error! Not number");
+					try {
+						writer.write(line + " = "+ "Error! Not number");
+						System.out.print("\nNow this in your file\n");
+						writer.flush();
+					} catch (IOException ex) {
+						System.out.print(ex.getMessage());
+					} 
+					
 					is = false;
 					break;
 				}
@@ -38,9 +63,29 @@ public class MainTest {
 				try {
 					b = Double.valueOf(num);	
 				}catch(NumberFormatException e) {
-					System.out.print("Error! Not number\n");
+					System.out.print("Error! Not number");
+					try {
+						writer.write(line + " = "+ "Error! Not number");
+						System.out.print("\nNow this in your file\n");
+						writer.flush();
+					} catch (IOException ex) {
+						System.out.print(ex.getMessage());
+					} 
+					
 					is = false;
 					break;
+				}
+				if(b==0.0) {
+					System.out.print("Error! Division by zero");
+					try {
+						writer.write(line + " = "+ "Error! Division by zero");
+						System.out.print("\nNow this in your file\n");
+						writer.flush();
+					} catch (IOException ex) {
+						System.out.print(ex.getMessage());
+					} 
+					is = false;
+					break;// да, тут без throw, если честно я не пытался его написать, потому что деление на 0 и на 0.0 вроде как тоже самое, а вроде и нет, лучше в некоторых местах опустить условие и схитрить )))
 				}
 			}
 		}
@@ -53,6 +98,13 @@ public class MainTest {
 						znak = result(num,znak);
 					}catch(Exception s){
 						System.out.print("Operation Error!");
+						try {
+							writer.write(line + " = "+ "Operation Error!");
+							System.out.print("\nNow this in your file\n");
+							writer.flush();
+						} catch (IOException ex) {
+							System.out.print(ex.getMessage());
+						} 
 						is=false;
 						break;
 					}
@@ -65,30 +117,20 @@ public class MainTest {
 			break;
 			case('-'): result = a - b;
 			break;
-			case('/'): 
-				if(b==0.0) System.out.print("Error! Division by zero"); // да, тут без throw, если честно я не пытался его написать, потому что деление на 0 и на 0.0 вроде как тоже самое, а вроде и нет, лучше в некоторых местах опустить условие и схитрить )))
-				else	result = a / b;
+			case('/'): result = a / b;
 			break;
 			case('*'): result = a * b;
 			break;
 			}
 			System.out.print(result);
-			try(FileWriter writer = new FileWriter("D:\\Folder_for_Java_IDE\\WorkWithFiles\\src\\fileTester\\results.txt",true)) {
+			try {
 				writer.write(line + " = "+result);
-				writer.append('\n');
+				System.out.print("\nNow this in your file\n");
 				writer.flush();
 			} catch (IOException ex) {
 				System.out.print(ex.getMessage());
 			}
 		}
-
-	}
-	public static char result(String nms, char znak) throws Exception { //так то можно легко обойтись и без этой конструкции, но как я сказал ранее, мы изучаем тему throw , так что нужно изгибаться по максимуму что-бы реализовывать через эти ... дебри, если можно так выразится 
-		if(nms.equals("/") || nms.equals("*") || nms.equals("+") || nms.equals("-")) {
-			znak = nms.charAt(0);
-			return znak;
-		}
-		else throw new Exception("OperationError");//Обрати вниманеи что это сообщение  отличается от заданого в условии. Именно это, сообщение, должно быть читабельным для программы, так что дальше мы просто через System.out.print выведем нужное нам сообщение.
 	}
 }
 
